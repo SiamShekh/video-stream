@@ -34,7 +34,10 @@ app.post("/upload", upload.single("video"), async (req, res) => {
     const folderId = uuid();
 
     child_process.exec(`ffmpeg -i ${videoInput} -filter_complex "[0:v]split=3[v1][v2][v3]; [v1]scale=-2:360[360p]; [v2]scale=-2:480[480p]; [v3]scale=-2:720[720p];" -map "[360p]" -map a:0 -c:v:0 libx264 -c:a:0 aac -map "[480p]" -map a:0 -c:v:1 libx264 -c:a:1 aac -map "[720p]" -map a:0 -c:v:2 libx264 -c:a:2 aac -hls_time 4 -hls_playlist_type vod -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2" -master_pl_name "master.m3u8" -hls_segment_filename "videos/${folderId}/v%v/seg_%03d.ts" videos/${folderId}/v%v/prog.m3u8`, (err, stdout, stderr) => {
-    
+        console.log(`Error`, err);
+        console.log(`Stdout`, stdout);
+        console.log(`Stderr`, stderr);
+
         if (err) {
             res.status(400).send(err);
             return;
